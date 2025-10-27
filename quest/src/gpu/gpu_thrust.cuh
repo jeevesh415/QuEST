@@ -665,7 +665,7 @@ void thrust_fullstatediagmatr_setElemsToPauliStrSum(FullStateDiagMatr out, Pauli
         rank, out.numElems, logNumElemsPerNode,
         in.numTerms, toCuQcomps(out.gpuElems), devCoeffsPtr, devStringsPtr);
 
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + out.numElemsPerNode;
     thrust::for_each(indIter, endIter, functor);
 }
@@ -708,7 +708,7 @@ void thrust_densmatr_setAmpsToPauliStrSum_sub(Qureg qureg, PauliStrSum sum) {
         qureg.rank, powerOf2(qureg.numQubits), qureg.logNumAmpsPerNode,
         sum.numTerms, toCuQcomps(qureg.gpuAmps), devCoeffsPtr, devStringsPtr);
 
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + qureg.numAmpsPerNode;
     thrust::for_each(indIter, endIter, functor);
 }
@@ -771,7 +771,7 @@ qreal thrust_densmatr_calcTotalProb_sub(Qureg qureg) {
     /// reduction may be suboptimal; it may be necessary to
     /// implement a custom numerically-stable CUDA reduction.
 
-    auto rawIter = thrust::make_counting_iterator(0LL);
+    auto rawIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto indIter = thrust::make_transform_iterator(rawIter, functor_getDiagInd(qureg));
     auto ampIter = thrust::make_permutation_iterator(getStartPtr(qureg), indIter);
     auto probIter= thrust::make_transform_iterator(ampIter, functor_getAmpReal());
@@ -791,7 +791,7 @@ qreal thrust_statevec_calcProbOfMultiQubitOutcome_sub(Qureg qureg, vector<int> q
     auto indFunctor = functor_insertBits<NumQubits>(getPtr(sortedQubits), valueMask, qubits.size());
     auto probFunctor = functor_getAmpNorm();
 
-    auto rawIter = thrust::make_counting_iterator(0LL);
+    auto rawIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto indIter = thrust::make_transform_iterator(rawIter, indFunctor);
     auto ampIter = thrust::make_permutation_iterator(getStartPtr(qureg), indIter);
     auto probIter = thrust::make_transform_iterator(ampIter, probFunctor);
@@ -814,7 +814,7 @@ qreal thrust_densmatr_calcProbOfMultiQubitOutcome_sub(Qureg qureg, vector<int> q
     auto diagIndFunctor = functor_getDiagInd(qureg);
     auto probFunctor = functor_getAmpReal();
 
-    auto rawIter = thrust::make_counting_iterator(0LL);
+    auto rawIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto indIter = thrust::make_transform_iterator(rawIter, basisIndFunctor);
     auto diagIter= thrust::make_transform_iterator(indIter, diagIndFunctor);
     auto ampIter = thrust::make_permutation_iterator(getStartPtr(qureg), diagIter);
@@ -864,7 +864,7 @@ cu_qcomp thrust_densmatr_calcFidelityWithPureState_sub(Qureg rho, Qureg psi) {
         rho.rank, rho.numQubits, rho.logNumAmpsPerNode, 
         psi.numAmps, toCuQcomps(rho.gpuAmps), toCuQcomps(psi.gpuAmps));
 
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     qindex numIts = rho.numAmpsPerNode;
 
     cu_qcomp init = getCuQcomp(0, 0);
@@ -888,7 +888,7 @@ qreal thrust_statevec_calcExpecAnyTargZ_sub(Qureg qureg, vector<int> targs) {
     auto functor = functor_getExpecStateVecZTerm(mask);
 
     qreal init = 0;
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + qureg.numAmpsPerNode;
 
     return thrust::inner_product(
@@ -905,7 +905,7 @@ cu_qcomp thrust_densmatr_calcExpecAnyTargZ_sub(Qureg qureg, vector<int> targs) {
     auto functor = functor_getExpecDensMatrZTerm(dim, ind, mask, toCuQcomps(qureg.gpuAmps));
 
     cu_qcomp init = getCuQcomp(0, 0);
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + powerOf2(qureg.logNumColsPerNode);
 
     return thrust::transform_reduce(indIter, endIter, functor, init, thrust::plus<cu_qcomp>());
@@ -920,7 +920,7 @@ cu_qcomp thrust_statevec_calcExpecPauliStr_subA(Qureg qureg, vector<int> x, vect
     auto functor = functor_getExpecStateVecPauliTerm(maskXY, maskYZ, ampsPtr, ampsPtr); // amps=pairAmps
 
     cu_qcomp init = getCuQcomp(0, 0);
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + qureg.numAmpsPerNode;
 
     cu_qcomp value = thrust::transform_reduce(indIter, endIter, functor, init, thrust::plus<cu_qcomp>());
@@ -938,7 +938,7 @@ cu_qcomp thrust_statevec_calcExpecPauliStr_subB(Qureg qureg, vector<int> x, vect
     auto functor = functor_getExpecStateVecPauliTerm(maskXY, maskYZ, ampsPtr, buffPtr);
 
     cu_qcomp init = getCuQcomp(0, 0);
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + qureg.numAmpsPerNode;
 
     cu_qcomp value = thrust::transform_reduce(indIter, endIter, functor, init, thrust::plus<cu_qcomp>());
@@ -956,7 +956,7 @@ cu_qcomp thrust_densmatr_calcExpecPauliStr_sub(Qureg qureg, vector<int> x, vecto
     auto functor = functor_getExpecDensMatrPauliTerm(mXY, mYZ, dim, ind, toCuQcomps(qureg.gpuAmps));
 
     cu_qcomp init = getCuQcomp(0, 0);
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + powerOf2(qureg.logNumColsPerNode);
 
     cu_qcomp value = thrust::transform_reduce(indIter, endIter, functor, init, thrust::plus<cu_qcomp>());
@@ -995,7 +995,7 @@ cu_qcomp thrust_densmatr_calcExpecFullStateDiagMatr_sub(Qureg qureg, FullStateDi
     auto functor = functor_getExpecDensMatrDiagMatrTerm<HasPower,UseRealPow>(dim, ind, ampsPtr, elemsPtr, expo);
 
     cu_qcomp init = getCuQcomp(0, 0);
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto endIter = indIter + powerOf2(qureg.logNumColsPerNode);
 
     return thrust::transform_reduce(indIter, endIter, functor, init, thrust::plus<cu_qcomp>());
@@ -1016,7 +1016,7 @@ void thrust_statevec_multiQubitProjector_sub(Qureg qureg, vector<int> qubits, ve
     auto projFunctor = functor_projectStateVec<NumQubits>(
         getPtr(devQubits), qubits.size(), retainValue, renorm);
 
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto ampIter = getStartPtr(qureg);
 
     qindex numIts = qureg.numAmpsPerNode;
@@ -1033,7 +1033,7 @@ void thrust_densmatr_multiQubitProjector_sub(Qureg qureg, vector<int> qubits, ve
         getPtr(devQubits), qubits.size(), qureg.rank, qureg.numQubits,
         qureg.logNumAmpsPerNode, retainValue, renorm);
 
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto ampIter = getStartPtr(qureg);
 
     qindex numIts = qureg.numAmpsPerNode;
@@ -1073,7 +1073,7 @@ void thrust_statevec_initUnnormalisedUniformlyRandomPureStateAmps_sub(Qureg qure
     unsigned seed = rand_getThreadSharedRandomSeed(qureg.isDistributed);
     auto functor = functor_setRandomStateVecAmp(seed);
 
-    auto indIter = thrust::make_counting_iterator(0LL);
+    auto indIter = thrust::make_counting_iterator(QINDEX_ZERO);
     auto ampIter = getStartPtr(qureg);
 
     qindex numIts = qureg.numAmpsPerNode;
