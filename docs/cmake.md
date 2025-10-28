@@ -36,6 +36,7 @@ make
 | `VERBOSE_LIB_NAME` | (`OFF`), `ON` | When turned on `LIB_NAME` will be modified according to the other configuration options chosen. For example compiling QuEST with multithreading, distribution, and double precision with `VERBOSE_LIB_NAME` turned on creates `libQuEST-fp2+mt+mpi.so`. |
 | `FLOAT_PRECISION` | (`2`), `1`, `4` | Determines which floating-point precision QuEST will use: double, single, or quad. *Note: Quad precision is not supported when also compiling for GPU.* |
 | `BUILD_EXAMPLES` | (`OFF`), `ON` | Determines whether the example programs will be built alongside QuEST. Note that `min_example` is always built. |
+| `INSTALL_BINARIES` | (`OFF`), `ON` | Determines whether compiled binaries such as the examples will be installed as well as the QuEST library. |
 | `ENABLE_MULTITHREADING` | (`ON`), `OFF` | Determines whether QuEST will be built with support for parallelisation with OpenMP. |
 | `ENABLE_DISTRIBUTION` | (`OFF`), `ON` | Determines whether QuEST will be built with support for parallelisation with MPI. |
 | `ENABLE_CUDA` | (`OFF`), `ON` | Determines whether QuEST will be built with support for NVIDIA GPU acceleration. If turned on, `CMAKE_CUDA_ARCHITECTURES` should probably also be set. |
