@@ -625,7 +625,11 @@ if (USER_SOURCE AND OUTPUT_EXE)
 
   add_executable(${OUTPUT_EXE} ${USER_SOURCE})
   target_link_libraries(${OUTPUT_EXE} PUBLIC QuEST)
-  install(TARGETS ${OUTPUT_EXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+   
+  if (INSTALL_BINARIES)
+    install(TARGETS ${OUTPUT_EXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  endif()
+  
   setup_quest_rpath(${OUTPUT_EXE})
 endif()
 
