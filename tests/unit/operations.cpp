@@ -1043,6 +1043,8 @@ void testOperationValidation(auto operation) {
     SECTION( "targeted amps fit in node" ) {
 
         // use any qureg which is otherwise compatible
+        // (but beware statevecs vs density matrices permit
+        //  different num targets before validation is triggered)
         qureg = (Apply == rightapply)?
             getCachedDensmatrs().begin()->second:
             getCachedStatevecs().begin()->second;
@@ -1055,7 +1057,8 @@ void testOperationValidation(auto operation) {
         // can only be validated if forced ctrl qubits permit 
         // enough remaining targets
         int minNumCtrls = (Ctrls == one)? 1 : 0;
-        int minNumTargs = numQubits - qureg.logNumNodes + 1;
+        int numVecQubits = (qureg.isDensityMatrix)? 2*numQubits : numQubits;
+        int minNumTargs = numVecQubits - qureg.logNumNodes + 1;
         int maxNumTargs = numQubits - minNumCtrls;
         if (minNumTargs > maxNumTargs)
             return;
